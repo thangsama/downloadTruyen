@@ -36,10 +36,10 @@ Vì 1 số truyện bị đăng thiếu chương</br></td>
 <table border="0">
 <tr><td>Download riêng lẻ từng chương</td></tr>
 <tr><td> Từ chương</td>
-<tr><td><input type ="text" name="start"></td></tr>
+<tr><td><input type ="number" name="start"></td></tr>
 
 <tr><td> đến chương</td><tr>
-<tr><td><input type ="text" name="end"></td></tr>
+<tr><td><input type ="number" name="end"></td></tr>
 <tr><td><input type= hidden name= "url" value= "${book.url}" ></td></tr>
 <tr><td><input type = "submit" value = "Download"/></td>
 </tr>
