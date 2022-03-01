@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.tomcat.util.codec.binary.StringUtils;
+
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
@@ -48,14 +50,17 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 		File fontFile = new File(this.getClass().getClassLoader().getResource("vuArial.ttf").getPath());
 		String content = null;
 		String titleOfChap = null;
-		
-		
+
+		// Making a file name (with name + number of chapter
+		String name = SiteUtil.getName(url);
+		byte[] nameAsBytes = StringUtils.getBytesUtf8(name);
+		String utf8EncodedName = StringUtils.newStringUtf8(nameAsBytes);
+
 		String start = request.getParameter("start");
 		String end = request.getParameter("end");
-				
-		
+
 		ServletOutputStream os = response.getOutputStream();
-		
+
 		// create a new document
 		Document doc = new Document(PageSize.A4);
 		try {
@@ -64,35 +69,41 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 			Font font = new Font(bf, 13);
 			Font fontTitleChap = new Font(bf, 18);
 
-			doc.addCreator("Thang Sama");
+			if (start == "") {
+				if (end != "") {
+					/// Check condition about number of StartChapter and EndChapter
+					int conEnd = Integer.parseInt(end);
+					doc.addCreator("Thang Sama");
+					String urlChapter = url + "chuong-" + conEnd + "/";
 
-			PdfWriter.getInstance(doc, os);
-			PdfWriter.getInstance(doc, new FileOutputStream("yourfilename.pdf"));
-			doc.open();
-			/// print pdf
-			/// Check condition about number of StartChapter and EndChapter
-			
-			
-			if(start=="") {
-				if(end!="") {
-				int conEnd= Integer.parseInt(end);
-				String urlChapter = url + "chuong-" + conEnd + "/";
-				content = SiteUtil.getContentBasic(urlChapter);
-				titleOfChap = SiteUtil.getChapterTitle(urlChapter);
+					// open new window with file converted on server
+					PdfWriter.getInstance(doc, os);
 
-				doc.add(new Paragraph(titleOfChap, fontTitleChap));
-				doc.add(new Paragraph(content, font));
-				doc.add(new Paragraph(breakline, font));
-				doc.add(Chunk.NEWLINE);
-			} else {
-				response.sendRedirect(request.getServletPath()+"/infoBook");
+					// save file to Desktop
+					PdfWriter.getInstance(doc, new FileOutputStream(utf8EncodedName + "chuong" + conEnd + ".pdf"));
+					doc.open();
+					/// print pdf
+					content = SiteUtil.getContentBasic(urlChapter);
+					titleOfChap = SiteUtil.getChapterTitle(urlChapter);
+					doc.add(new Paragraph(titleOfChap, fontTitleChap));
+					doc.add(new Paragraph(content, font));
+					doc.add(new Paragraph(breakline, font));
+					doc.add(Chunk.NEWLINE);
+				} else {
+					response.sendRedirect(request.getServletPath() + "/infoBook");
 				}
-			}else if(start!="") {
-				if(end!="") {
-					int conStart=Integer.parseInt(start);
-					int conEnd= Integer.parseInt(end);
+			} else if (start != "") {
+				if (end != "") {
+					int conStart = Integer.parseInt(start);
+					int conEnd = Integer.parseInt(end);
 					if (conStart > conEnd) {
+						doc.addCreator("Thang Sama");
 
+						// open new window with file converted on server
+						PdfWriter.getInstance(doc, os);
+
+						// save file to Desktop
+						PdfWriter.getInstance(doc, new FileOutputStream(utf8EncodedName + "-chuong" + conEnd +"---"+conStart+".pdf"));
 						for (int i = conEnd; i < conStart + 1; ++i) {
 
 							String urlChapter = url + "chuong-" + i + "/";
@@ -100,9 +111,11 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 								i = i++;
 
 							} else {
+								
+								doc.open();
+								/// print pdf
 								content = SiteUtil.getContentBasic(urlChapter);
 								titleOfChap = SiteUtil.getChapterTitle(urlChapter);
-
 								doc.add(new Paragraph(titleOfChap, fontTitleChap));
 								doc.add(new Paragraph(content, font));
 								doc.add(new Paragraph(breakline, font));
@@ -110,7 +123,14 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 							}
 						}
 					} else {
+						doc.addCreator("Thang Sama");
+						PdfWriter.getInstance(doc, os);
+						// open new window with file converted on server
+						
 
+						// save file to Desktop
+						PdfWriter.getInstance(doc, new FileOutputStream(utf8EncodedName + "-chuong" + conStart+"---"+conEnd + ".pdf"));
+						doc.open();
 						for (int i = conStart; i < conEnd + 1; ++i) {
 
 							String urlChapter = url + "chuong-" + i + "/";
@@ -118,6 +138,8 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 								i = i++;
 
 							} else {
+								
+								/// print pdf
 								content = SiteUtil.getContentBasic(urlChapter);
 								titleOfChap = SiteUtil.getChapterTitle(urlChapter);
 								doc.add(new Paragraph(titleOfChap, fontTitleChap));
@@ -127,20 +149,28 @@ public class DownloadSpecificPartServlet extends HttpServlet {
 							}
 						}
 					}
-				}else {
-					int conStart=Integer.parseInt(start);
+				} else {
+					int conStart = Integer.parseInt(start);
+					doc.addCreator("Thang Sama");
 					String urlChapter = url + "chuong-" + conStart + "/";
+
+					// open new window with file converted on server
+					PdfWriter.getInstance(doc, os);
+
+					// save file to Desktop
+					PdfWriter.getInstance(doc, new FileOutputStream(utf8EncodedName + "-chuong-" + conStart + ".pdf"));
+					doc.open();
+					/// print pdf
 					content = SiteUtil.getContentBasic(urlChapter);
 					titleOfChap = SiteUtil.getChapterTitle(urlChapter);
-
 					doc.add(new Paragraph(titleOfChap, fontTitleChap));
 					doc.add(new Paragraph(content, font));
 					doc.add(new Paragraph(breakline, font));
 					doc.add(Chunk.NEWLINE);
 				}
-				
+
 			}
-									
+
 			doc.close();
 		} catch (Exception a) {
 			a.printStackTrace();
