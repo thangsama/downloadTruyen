@@ -47,7 +47,7 @@ Vì 1 số truyện bị đăng thiếu chương</br></td>
 </table>
 </form>
 </c:forEach>
-
+<a>  **Sau khi nhấn nút download sẽ tự động download file về trên desktop, vui lòng kiểm tra</a>
 <jsp:include page="_footer.jsp"></jsp:include>
 </body>
 </html>
