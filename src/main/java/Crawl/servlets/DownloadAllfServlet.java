@@ -1,7 +1,10 @@
 package Crawl.servlets;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+
+import org.apache.tomcat.util.codec.binary.StringUtils;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -48,6 +51,11 @@ public class DownloadAllfServlet extends HttpServlet {
 		String content = null;
 		String titleOfChap = null;
 		
+		// Making a file name (with name + number of chapter
+		String name = SiteUtil.getName(url);
+		byte[] nameAsBytes = StringUtils.getBytesUtf8(name);
+		String utf8EncodedName = StringUtils.newStringUtf8(nameAsBytes);
+		
 		int totalChapter = Integer.parseInt(SiteUtil.getNumOfChap(url));
 
 		ServletOutputStream os = response.getOutputStream();
@@ -64,7 +72,7 @@ public class DownloadAllfServlet extends HttpServlet {
 			doc.addCreator("Thang Sama");
 
 			PdfWriter.getInstance(doc, os);
-			
+			PdfWriter.getInstance(doc, new FileOutputStream(utf8EncodedName + "-chuong-1--" + totalChapter + ".pdf"));
 			doc.open();
 			
 			// Print pdf with totalchapter
