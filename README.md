@@ -5,6 +5,6 @@
 
 -server apache tomcat 10 
 
--IDE : Esclipse
+-IDE : Eclipse
 
 -chỉ lấy link download từ truyenfull.vn
